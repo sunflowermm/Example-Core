@@ -1,5 +1,5 @@
-import StreamLoader from '#infrastructure/aistream/loader.js'
-import BotUtil from '#utils/botutil.js'
+import StreamLoader from '../../../src/infrastructure/aistream/loader.js'
+import BotUtil from '../../../src/utils/botutil.js'
 
 /**
  * 工作流插件示例

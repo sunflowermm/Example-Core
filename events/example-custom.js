@@ -1,6 +1,6 @@
-import EventListenerBase from '#infrastructure/listener/base.js'
-import { EventNormalizer } from '#utils/event-normalizer.js'
-import BotUtil from '#utils/botutil.js'
+import EventListenerBase from '../../../src/infrastructure/listener/base.js'
+import { EventNormalizer } from '../../../src/utils/event-normalizer.js'
+import BotUtil from '../../../src/utils/botutil.js'
 
 /**
  * 自定义事件监听器示例

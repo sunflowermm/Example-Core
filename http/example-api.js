@@ -1,5 +1,5 @@
-import { HttpResponse } from '#utils/http-utils.js';
-import { InputValidator } from '#utils/input-validator.js';
+import { HttpResponse } from '../../../src/utils/http-utils.js';
+import { InputValidator } from '../../../src/utils/input-validator.js';
 
 /**
  * HTTP API 示例

@@ -1,4 +1,4 @@
-import BotUtil from '#utils/botutil.js'
+import BotUtil from '../../../src/utils/botutil.js'
 
 /**
  * 定时任务插件示例
