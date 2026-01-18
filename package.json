@@ -1,0 +1,23 @@
+{
+  "name": "xrk-core-examples",
+  "version": "1.0.0",
+  "description": "XRK-AGT Core 开发示例集合 - 用于学习和参考的示例代码",
+  "type": "module",
+  "main": "index.js",
+  "author": "Xrkseek",
+  "license": "MIT",
+  "keywords": [
+    "xrk-agt",
+    "examples",
+    "plugin",
+    "event-listener",
+    "http-api",
+    "stream"
+  ],
+  "engines": {
+    "node": ">=24.12.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
