@@ -4,6 +4,17 @@
 
 > **注意**：这是一个独立的示例代码仓库，可以单独上传到 Git 仓库。所有示例代码都是完整的、可运行的，可以直接作为开发参考。
 
+## ⚠️ 重要提示：导入路径
+
+**Example-Core 使用相对路径导入**，不使用 Node.js 的 `#imports` 别名：
+
+- ✅ **正确**：`import BotUtil from '../../../src/utils/botutil.js'`
+- ❌ **错误**：`import BotUtil from '#utils/botutil.js'`
+
+**原因**：Example-Core 作为独立包有自己的 `package.json`，Node.js 的 `imports` 字段作用域限制在包内，无法跨包引用。使用相对路径可以确保模块正确解析。
+
+详细说明请参考：[导入路径迁移指南](../../docs/imports-migration.md)
+
 ## 📁 目录结构
 
 ```
@@ -285,7 +296,7 @@ task: [
 HTTP API 使用对象导出方式：
 
 ```javascript
-import { HttpResponse } from '#utils/http-utils.js';
+import { HttpResponse } from '../../../src/utils/http-utils.js';
 
 export default {
   name: 'api-name',
@@ -318,7 +329,7 @@ export default {
 工作流继承自 `AIStream` 类：
 
 ```javascript
-import AIStream from '#infrastructure/aistream/aistream.js';
+import AIStream from '../../../src/infrastructure/aistream/aistream.js';
 
 export default class MyStream extends AIStream {
   constructor() {
@@ -388,7 +399,7 @@ Bot.tasker.push(
 事件监听器用于接收和处理平台事件：
 
 ```javascript
-import EventListenerBase from '#infrastructure/listener/base.js';
+import EventListenerBase from '../../../src/infrastructure/listener/base.js';
 
 export default class MyListener extends EventListenerBase {
   constructor() {
@@ -459,12 +470,23 @@ Web 界面是独立的 HTML 文件，可以通过 HTTP API 与框架交互：
 
 ### 导入路径
 
-示例代码使用框架的路径别名：
-- `#utils/*` - 工具函数
-- `#infrastructure/*` - 基础设施
-- `#modules/*` - 模块
+**重要**：Example-Core 使用相对路径导入，不使用 Node.js 的 `#imports` 别名。
 
-实际使用时需要根据项目配置调整路径。
+**路径规则**：
+- 从 `core/Example-Core/*` 导入 `src/utils/*`：`../../../src/utils/*`
+- 从 `core/Example-Core/*` 导入 `src/infrastructure/*`：`../../../src/infrastructure/*`
+
+**示例**：
+```javascript
+// ✅ 正确：使用相对路径
+import BotUtil from '../../../src/utils/botutil.js';
+import StreamLoader from '../../../src/infrastructure/aistream/loader.js';
+
+// ❌ 错误：Example-Core 不支持 #imports 别名
+import BotUtil from '#utils/botutil.js';
+```
+
+**原因**：Example-Core 作为独立包有自己的 `package.json`，Node.js 的 `imports` 字段作用域限制在包内，无法跨包引用。使用相对路径可以确保模块正确解析。
 
 ## 📝 使用示例
 
@@ -499,7 +521,7 @@ export default class MyPlugin extends plugin {
 
 ```javascript
 // http/my-api.js
-import { HttpResponse } from '#utils/http-utils.js';
+import { HttpResponse } from '../../../src/utils/http-utils.js';
 
 export default {
   name: 'my-api',
@@ -521,7 +543,7 @@ export default {
 
 ```javascript
 // plugin/ai-plugin.js
-import StreamLoader from '#infrastructure/aistream/loader.js';
+import StreamLoader from '../../../src/infrastructure/aistream/loader.js';
 
 export default class AIPlugin extends plugin {
   constructor() {
