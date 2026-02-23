@@ -2,11 +2,11 @@
  * Tasker 适配器示例
  *
  * Tasker 用于连接不同聊天平台（QQ、微信、Telegram 等），负责收发消息与事件。
- * 框架从 core/*/tasker/*.js 自动加载，需将实例 push 到 Bot.tasker。
+ * 框架从 core 下各子目录的 tasker 目录自动加载，需将实例 push 到 Bot.tasker。
+ * 写法对齐 system-Core 的 OneBotv11：仅用 Bot，不依赖 #utils。
  */
 
 import { ulid } from 'ulid';
-import BotUtil from '../../../src/utils/botutil.js';
 
 Bot.tasker.push(
   new (class ExampleTasker {
@@ -16,25 +16,23 @@ Bot.tasker.push(
     echo = new Map();
     timeout = 60000;
 
-    /** 日志用：屏蔽 base64 内容 */
-    safeLogMsg(msg) {
-      return String(msg ?? '').replace(/base64:\/\/[^,"\]]+/g, 'base64://...');
+    /** 生成日志消息（隐藏 base64 内容） */
+    makeLog(msg) {
+      return Bot.String(msg ?? '').replace(/base64:\/\/[^,"\]]+/g, 'base64://...');
     }
 
     sendApi(data, ws, action, params = {}) {
       const echo = ulid();
       const request = { action, params, echo };
 
-      if (ws?.sendMsg) {
-        ws.sendMsg(request);
-      }
+      if (ws?.sendMsg) ws.sendMsg(request);
 
       const cache = Promise.withResolvers();
       this.echo.set(echo, cache);
 
       const timeoutId = setTimeout(() => {
         cache.reject(Bot.makeError('请求超时', 'RequestTimeout', { request, timeout: this.timeout }));
-        BotUtil.makeLog('error', `请求超时 ${this.safeLogMsg(request)}`, data?.self_id ?? this.id);
+        Bot.makeLog('error', [`请求超时: ${action}`, request], data?.self_id ?? this.id);
         ws?.terminate();
       }, this.timeout);
 
@@ -44,9 +42,7 @@ Bot.tasker.push(
             throw Bot.makeError(response.msg || response.wording || 'API 错误', 'ApiError', { request, error: response });
           }
           return response.data
-            ? new Proxy(response, {
-                get: (target, prop) => target.data[prop] ?? target[prop]
-              })
+            ? new Proxy(response, { get: (target, prop) => target.data[prop] ?? target[prop] })
             : response;
         })
         .finally(() => {
@@ -93,9 +89,7 @@ Bot.tasker.push(
             break;
         }
 
-        if (i.data?.file) {
-          i.data.file = await this.makeFile(i.data.file);
-        }
+        if (i.data?.file) i.data.file = await this.makeFile(i.data.file);
         msgs.push(i);
       }
 
@@ -111,9 +105,7 @@ Bot.tasker.push(
         ret.push(...(Array.isArray(data) ? data : [data]));
       }
 
-      if (message.length) {
-        ret.push(await send(message));
-      }
+      if (message.length) ret.push(await send(message));
 
       if (ret.length === 1) return ret[0];
 
@@ -125,7 +117,7 @@ Bot.tasker.push(
       return this.sendMsg(
         msg,
         message => {
-          BotUtil.makeLog('info', `发送好友消息：${this.safeLogMsg(message)}`, `${data.self_id} => ${data.user_id}`);
+          Bot.makeLog('info', `发送好友消息：${this.makeLog(message)}`, `${data.self_id} => ${data.user_id}`);
           return Promise.resolve({ message_id: ulid(), time: Date.now() / 1000 });
         },
         m => this.sendFriendForwardMsg(data, m)
@@ -133,14 +125,12 @@ Bot.tasker.push(
     }
 
     sendGroupMsg(data, msg) {
-      if (msg?.type === 'poke' && msg.qq) {
-        return this.sendPoke(data, msg.qq);
-      }
+      if (msg?.type === 'poke' && msg.qq) return this.sendPoke(data, msg.qq);
 
       return this.sendMsg(
         msg,
         message => {
-          BotUtil.makeLog('info', `发送群消息：${this.safeLogMsg(message)}`, `${data.self_id} => ${data.group_id}`);
+          Bot.makeLog('info', `发送群消息：${this.makeLog(message)}`, `${data.self_id} => ${data.group_id}`);
           return Promise.resolve({ message_id: ulid(), time: Date.now() / 1000 });
         },
         m => this.sendGroupForwardMsg(data, m)
@@ -148,22 +138,22 @@ Bot.tasker.push(
     }
 
     sendPoke(data, user_id) {
-      BotUtil.makeLog('info', `发送戳一戳：${user_id}`, `${data.self_id} => ${data.group_id}`);
+      Bot.makeLog('info', `发送戳一戳：${user_id}`, `${data.self_id} => ${data.group_id}`);
       return Promise.resolve({ success: true });
     }
 
     async sendFriendForwardMsg(data, msg) {
-      BotUtil.makeLog('info', '发送好友转发消息', data.self_id);
+      Bot.makeLog('info', '发送好友转发消息', data.self_id);
       return Promise.resolve({ message_id: ulid() });
     }
 
     async sendGroupForwardMsg(data, msg) {
-      BotUtil.makeLog('info', '发送群转发消息', data.self_id);
+      Bot.makeLog('info', '发送群转发消息', data.self_id);
       return Promise.resolve({ message_id: ulid() });
     }
 
     async recallMsg(data, message_id) {
-      BotUtil.makeLog('info', `撤回消息：${message_id}`, data.self_id);
+      Bot.makeLog('info', `撤回消息：${message_id}`, data.self_id);
       const ids = Array.isArray(message_id) ? message_id : [message_id];
       return ids.map(i => {
         try {
@@ -175,9 +165,7 @@ Bot.tasker.push(
     }
 
     parseMsg(message) {
-      if (typeof message === 'string') {
-        return [{ type: 'text', data: { text: message } }];
-      }
+      if (typeof message === 'string') return [{ type: 'text', data: { text: message } }];
       if (Array.isArray(message)) {
         return message.map(m => (typeof m === 'string' ? { type: 'text', data: { text: m } } : m));
       }
@@ -185,19 +173,17 @@ Bot.tasker.push(
     }
 
     load() {
-      if (!Array.isArray(Bot.wsf[this.path])) {
-        Bot.wsf[this.path] = [];
-      }
-      Bot.wsf[this.path].push((ws) => {
+      if (!Array.isArray(Bot.wsf[this.path])) Bot.wsf[this.path] = [];
+      Bot.wsf[this.path].push(ws => {
         ws.on('message', data => {
-          BotUtil.makeLog('debug', `收到消息：${this.safeLogMsg(data)}`, this.id);
+          Bot.makeLog('debug', `收到消息：${this.makeLog(data)}`, this.id);
         });
       });
     }
 
     async destroy() {
       this.echo.clear();
-      BotUtil.makeLog('info', `Tasker "${this.name}" 已卸载`, this.id);
+      Bot.makeLog('info', `Tasker "${this.name}" 已卸载`, this.id);
     }
   })()
 );
