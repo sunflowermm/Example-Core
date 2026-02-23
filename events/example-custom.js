@@ -16,19 +16,15 @@ export default class ExampleCustomEvent extends EventListenerBase {
 
   /**
    * 初始化监听器
-   * 在这里注册需要监听的事件
    */
   async init() {
-    // 获取 Bot 实例
-    const bot = this.bot || Bot
+    const bot = this.bot || Bot;
+    this._boundHandler = (e) => this.handleEvent(e);
+    bot.on('custom.message', this._boundHandler);
+    bot.on('custom.notice', this._boundHandler);
+    bot.on('custom.request', this._boundHandler);
 
-    // 监听自定义事件（示例）
-    // 注意：这里的事件名称需要根据实际 Tasker 提供的事件来调整
-    bot.on('custom.message', (e) => this.handleEvent(e))
-    bot.on('custom.notice', (e) => this.handleEvent(e))
-    bot.on('custom.request', (e) => this.handleEvent(e))
-
-    BotUtil.makeLog('info', '自定义事件监听器已初始化', 'ExampleCustomEvent')
+    BotUtil.makeLog('info', '自定义事件监听器已初始化', 'ExampleCustomEvent');
   }
 
   /**
@@ -100,16 +96,16 @@ export default class ExampleCustomEvent extends EventListenerBase {
   }
 
   /**
-   * 清理资源（可选）
-   * 在监听器卸载时调用
+   * 清理资源（监听器卸载时调用）
    */
   async destroy() {
-    // 移除事件监听器
-    const bot = this.bot || Bot
-    bot.off('custom.message', this.handleEvent)
-    bot.off('custom.notice', this.handleEvent)
-    bot.off('custom.request', this.handleEvent)
-
-    BotUtil.makeLog('info', '自定义事件监听器已卸载', 'ExampleCustomEvent')
+    const bot = this.bot || Bot;
+    if (this._boundHandler) {
+      bot.off('custom.message', this._boundHandler);
+      bot.off('custom.notice', this._boundHandler);
+      bot.off('custom.request', this._boundHandler);
+      this._boundHandler = null;
+    }
+    BotUtil.makeLog('info', '自定义事件监听器已卸载', 'ExampleCustomEvent');
   }
 }

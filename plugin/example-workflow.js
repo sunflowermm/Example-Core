@@ -49,8 +49,8 @@ export default class ExampleWorkflow extends plugin {
       return true
     }
 
-    // 获取工作流实例（这里使用 'chat' 工作流作为示例）
-    const stream = StreamLoader.getStream('chat')
+    // 获取工作流实例（使用本 Core 的 example-stream）
+    const stream = StreamLoader.getStream('example-stream');
     if (!stream) {
       await this.reply('工作流未加载，请检查配置')
       return true
@@ -108,7 +108,7 @@ export default class ExampleWorkflow extends plugin {
       return true
     }
 
-    const stream = StreamLoader.getStream('chat')
+    const stream = StreamLoader.getStream('example-stream')
     if (!stream) {
       await this.reply('工作流未加载，请检查配置')
       return true

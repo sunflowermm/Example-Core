@@ -34,14 +34,10 @@ export default class ExampleStream extends AIStream {
 
   /**
    * 初始化工作流
-   * 在工作流加载时调用，只执行一次
    */
   async init() {
-    await super.init();  // 调用父类初始化方法
-    
-    // 在这里可以注册自定义函数、加载资源等
-    // 例如：this.registerAllFunctions();
-    
+    await super.init();
+    this.registerAllFunctions();
     BotUtil.makeLog('info', `工作流 "${this.name}" 已初始化`, 'ExampleStream');
     return true;
   }
@@ -93,15 +89,8 @@ export default class ExampleStream extends AIStream {
         ...(typeof input === 'object' ? input : {})
       });
 
-      // 调用 AI（这里会调用实际的 LLM API）
-      // 如果需要流式输出，可以使用 callAIStream
-      const response = await this.callAI(messages, this.config, {
-        enableFunctionCalling: true,
-        context: { e, question }
-      });
-
-      // 注意：工作流通常只负责生成响应，不负责发送消息
-      // 消息发送应该由调用者（如插件）来处理
+      // 调用 AI（callAI 签名为 messages, apiConfig）
+      const response = await this.callAI(messages, this.config);
       return response;
     } catch (error) {
       BotUtil.makeLog('error', `工作流处理失败: ${error.message}`, 'ExampleStream');
@@ -110,15 +99,12 @@ export default class ExampleStream extends AIStream {
   }
 
   /**
-   * 注册自定义函数（示例）
-   * 可以在这里注册自定义的 Function Calling 函数
+   * 注册 MCP 工具（与 Function Calling 对应，供 LLM 调用）
    */
   registerAllFunctions() {
-    // 示例：注册一个获取当前时间的函数
-    this.registerFunction({
-      name: 'get_current_time',
+    this.registerMCPTool('get_current_time', {
       description: '获取当前时间',
-      parameters: {
+      inputSchema: {
         type: 'object',
         properties: {
           format: {
@@ -128,10 +114,9 @@ export default class ExampleStream extends AIStream {
           }
         }
       },
-      handler: async (params) => {
+      handler: async (params = {}) => {
         const { format = 'locale' } = params;
         const now = new Date();
-        
         switch (format) {
           case 'iso':
             return now.toISOString();
@@ -144,47 +129,38 @@ export default class ExampleStream extends AIStream {
       }
     });
 
-    // 示例：注册一个计算函数
-    this.registerFunction({
-      name: 'calculate',
+    this.registerMCPTool('calculate', {
       description: '执行简单的数学计算',
-      parameters: {
+      inputSchema: {
         type: 'object',
         properties: {
           expression: {
             type: 'string',
-            description: '数学表达式，例如：2+2, 10*5, 100/4'
+            description: '数学表达式，例如：2+2, 10*5'
           }
         },
         required: ['expression']
       },
-      handler: async (params) => {
+      handler: async (params = {}) => {
         const { expression } = params;
         try {
-          // 注意：实际使用时应该使用更安全的表达式解析器
-          // 这里只是示例
           if (!/^[\d+\-*/().\s]+$/.test(expression)) {
-            return { error: '表达式包含非法字符' };
+            return this.errorResponse('INVALID_PARAM', '表达式包含非法字符');
           }
           const result = Function(`"use strict"; return (${expression})`)();
-          return { result, expression };
+          return this.successResponse({ result, expression });
         } catch (error) {
-          return { error: error.message };
+          return this.errorResponse('CALC_ERROR', error.message);
         }
       }
     });
 
-    // 示例：注册一个文本处理函数
-    this.registerFunction({
-      name: 'text_process',
-      description: '处理文本，支持反转、大写、小写等操作',
-      parameters: {
+    this.registerMCPTool('text_process', {
+      description: '处理文本：反转、大写、小写、长度、词数',
+      inputSchema: {
         type: 'object',
         properties: {
-          text: {
-            type: 'string',
-            description: '要处理的文本'
-          },
+          text: { type: 'string', description: '要处理的文本' },
           operation: {
             type: 'string',
             description: '操作类型',
@@ -193,22 +169,21 @@ export default class ExampleStream extends AIStream {
         },
         required: ['text', 'operation']
       },
-      handler: async (params) => {
+      handler: async (params = {}) => {
         const { text, operation } = params;
-        
         switch (operation) {
           case 'reverse':
-            return { result: text.split('').reverse().join('') };
+            return this.successResponse({ result: text.split('').reverse().join('') });
           case 'uppercase':
-            return { result: text.toUpperCase() };
+            return this.successResponse({ result: text.toUpperCase() });
           case 'lowercase':
-            return { result: text.toLowerCase() };
+            return this.successResponse({ result: text.toLowerCase() });
           case 'length':
-            return { result: text.length };
+            return this.successResponse({ result: text.length });
           case 'words':
-            return { result: text.split(/\s+/).filter(w => w).length };
+            return this.successResponse({ result: text.split(/\s+/).filter(w => w).length });
           default:
-            return { error: '不支持的操作类型' };
+            return this.errorResponse('INVALID_PARAM', '不支持的操作');
         }
       }
     });
@@ -242,8 +217,5 @@ export default class ExampleStream extends AIStream {
       stack: error.stack,
       context
     });
-    
-    // 可以在这里实现错误恢复逻辑
-    // 例如：重试、降级处理等
   }
 }

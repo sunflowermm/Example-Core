@@ -1,42 +1,39 @@
-# XRK-Core 示例核心
+# Example-Core 示例核心
 
-本目录包含了 XRK-AGT 框架的各种开发示例，用于学习和参考。这些示例代码展示了框架的核心功能和最佳实践，可以直接将代码交予AI，让AI在此基础上完成二次开发，符合我们VIBECODING的标准
+本目录为 XRK-AGT 的**示例 Core**，用于学习与参考。框架会按目录自动加载本 Core 下的 plugin、events、http、stream、tasker、www，无需在 `index.js` 中列出模块或加载模块，其次就是这个Core可以和自带的 system-Core 作为 ai 参考的两个重要的 Core
 
-> **注意**：这是一个独立的示例代码仓库，可以单独上传到 Git 仓库。所有示例代码都是完整的、可运行的，可以直接作为开发参考。
+## ⚠️ 导入路径
 
-## ⚠️ 重要提示：导入路径
+**Example-Core 使用相对路径**，不使用 Node 的 `#imports` 别名：
 
-**Example-Core 使用相对路径导入**，不使用 Node.js 的 `#imports` 别名：
+- ✅ `import BotUtil from '../../../src/utils/botutil.js'`
+- ❌ `import BotUtil from '#utils/botutil.js'`
 
-- ✅ **正确**：`import BotUtil from '../../../src/utils/botutil.js'`
-- ❌ **错误**：`import BotUtil from '#utils/botutil.js'`
-
-**原因**：Example-Core 作为独立包有自己的 `package.json`，Node.js 的 `imports` 字段作用域限制在包内，无法跨包引用。使用相对路径可以确保模块正确解析。
-
-详细说明请参考：[导入路径迁移指南](../../docs/imports-migration.md)
+原因：本 Core 有独立 `package.json`，`imports` 作用域在包内，无法引用上层 `src/`，故使用相对路径。
 
 ## 📁 目录结构
 
 ```
-XRK-Core/
-├── .gitignore           # Git 忽略文件配置
-├── package.json         # 本 Core 的包配置
-├── README.md            # 本文档
-├── index.js             # 入口文件（说明文档）
-├── plugin/              # 插件示例
-│   ├── example-basic.js       # 基础插件示例（消息处理、命令响应等）
-│   ├── example-workflow.js    # 工作流插件示例（AI 对话集成）
-│   └── example-timer.js       # 定时任务插件示例（Cron 定时任务）
-├── events/              # 事件监听器示例
-│   └── example-custom.js      # 自定义事件监听器示例（事件适配器）
-├── http/                # HTTP API 示例
-│   └── example-api.js         # HTTP API 示例（RESTful API）
-├── stream/              # AI 工作流示例
-│   └── example-stream.js      # 工作流示例（AI Stream 实现）
-├── tasker/              # Tasker 适配器示例
-│   └── example-tasker.js      # Tasker 适配器示例（平台连接适配）
-└── www/                 # Web 界面示例
-    └── example.html           # 示例 Web 界面（HTML）
+Example-Core/
+├── .gitignore
+├── package.json
+├── README.md
+├── index.js             # 入口（仅说明，框架按目录自动发现）
+├── plugin/
+│   ├── example-basic.js
+│   ├── example-workflow.js
+│   └── example-timer.js
+├── events/
+│   └── example-custom.js
+├── http/
+│   └── example-api.js
+├── stream/
+│   └── example-stream.js
+├── tasker/
+│   └── example-tasker.js
+└── www/
+    └── example/
+        └── example.html
 ```
 
 ## 🏗️ 架构图
@@ -98,7 +95,7 @@ sequenceDiagram
 
 ```mermaid
 mindmap
-  root((XRK-Core))
+  root((Example-Core))
     插件系统
       基础插件
       工作流插件
@@ -326,7 +323,7 @@ export default {
 
 ### AI 工作流
 
-工作流继承自 `AIStream` 类：
+工作流继承自 `AIStream`，使用 **registerMCPTool** 注册工具（供 LLM 调用）：
 
 ```javascript
 import AIStream from '../../../src/infrastructure/aistream/aistream.js';
@@ -334,35 +331,27 @@ import AIStream from '../../../src/infrastructure/aistream/aistream.js';
 export default class MyStream extends AIStream {
   constructor() {
     super({
-      name: 'stream-name',
+      name: 'my-stream',
       description: '工作流描述',
-      config: {
-        temperature: 0.8,
-        maxTokens: 6000,
-        topP: 0.9
-      },
-      embedding: {
-        enabled: true  // 启用 Embedding
-      }
-    })
+      config: { temperature: 0.8, maxTokens: 6000, topP: 0.9 },
+      embedding: { enabled: true }
+    });
   }
 
-  async process(e, input, options) {
-    // e - 事件对象
-    // input - 用户输入（字符串或对象）
-    // options - 选项配置
+  async init() {
+    await super.init();
+    this.registerMCPTool('my_tool', {
+      description: '工具描述',
+      inputSchema: { type: 'object', properties: { key: { type: 'string' } }, required: ['key'] },
+      handler: async (params) => this.successResponse(params)
+    });
+  }
+
+  async process(e, input, options = {}) {
+    const question = typeof input === 'string' ? input : (input?.text || input?.message || '');
+    const messages = await this.buildChatContext(e, { text: question });
     const response = await this.callAI(messages, this.config);
     return response;
-  }
-
-  registerAllFunctions() {
-    // 注册 Function Calling 函数
-    this.registerFunction({
-      name: 'my_function',
-      description: '函数描述',
-      parameters: { /* ... */ },
-      handler: async (params) => { /* ... */ }
-    });
   }
 }
 ```
@@ -445,13 +434,16 @@ Web 界面是独立的 HTML 文件，可以通过 HTTP API 与框架交互：
 
 ### 加载方式
 
-框架会根据配置文件自动扫描和加载：
-- `plugin/` 目录下的插件文件
-- `events/` 目录下的事件监听器
-- `http/` 目录下的 HTTP API
-- `stream/` 目录下的工作流
-- `tasker/` 目录下的适配器
-- `www/` 目录下的 Web 文件（通过 HTTP 服务器提供）
+框架会**按目录自动扫描**并加载各 Core 下的：
+
+- `plugin/*.js` → 插件
+- `events/*.js` → 事件监听器
+- `http/*.js` → HTTP API
+- `stream/*.js` → 工作流
+- `tasker/*.js` → Tasker 适配器（需在文件中 `Bot.tasker.push(实例)`）
+- `www/**` → 静态页面
+
+无需在 `index.js` 中列出上述模块。
 
 ### 优先级
 
@@ -470,23 +462,10 @@ Web 界面是独立的 HTML 文件，可以通过 HTTP API 与框架交互：
 
 ### 导入路径
 
-**重要**：Example-Core 使用相对路径导入，不使用 Node.js 的 `#imports` 别名。
+- 从 `core/Example-Core/*` 引用 `src/utils/*`：`../../../src/utils/*`
+- 从 `core/Example-Core/*` 引用 `src/infrastructure/*`：`../../../src/infrastructure/*`
 
-**路径规则**：
-- 从 `core/Example-Core/*` 导入 `src/utils/*`：`../../../src/utils/*`
-- 从 `core/Example-Core/*` 导入 `src/infrastructure/*`：`../../../src/infrastructure/*`
-
-**示例**：
-```javascript
-// ✅ 正确：使用相对路径
-import BotUtil from '../../../src/utils/botutil.js';
-import StreamLoader from '../../../src/infrastructure/aistream/loader.js';
-
-// ❌ 错误：Example-Core 不支持 #imports 别名
-import BotUtil from '#utils/botutil.js';
-```
-
-**原因**：Example-Core 作为独立包有自己的 `package.json`，Node.js 的 `imports` 字段作用域限制在包内，无法跨包引用。使用相对路径可以确保模块正确解析。
+不要使用 `#utils/`、`#infrastructure/` 等别名（本 Core 内无法解析）。
 
 ## 📝 使用示例
 
@@ -542,37 +521,19 @@ export default {
 ### 示例 3：使用工作流
 
 ```javascript
-// plugin/ai-plugin.js
 import StreamLoader from '../../../src/infrastructure/aistream/loader.js';
 
-export default class AIPlugin extends plugin {
-  constructor() {
-    super({
-      name: 'AI 插件',
-      event: 'message',
-      rule: [{ reg: '^ai:', fnc: 'handleAI' }]
-    })
-  }
-
-  async handleAI() {
-    const question = this.e.msg.replace('ai:', '').trim()
-    const stream = StreamLoader.getStream('chat')
-    await stream.process(this.e, question, {
-      enableMemory: true
-    })
-    return true
-  }
-}
+// 在插件中调用工作流
+const stream = StreamLoader.getStream('example-stream');
+await stream.process(this.e, question, { enableMemory: true });
 ```
 
 ## ⚠️ 注意事项
 
-1. **示例代码**：这些文件主要用于学习和参考，实际使用时请根据需求修改
-2. **安全性**：示例中的某些代码（如 `eval`）仅用于演示，实际使用时应该使用更安全的实现
-3. **性能**：频繁的定时任务应该轻量级，避免影响系统性能
-4. **错误处理**：实际使用时应该添加完善的错误处理和日志记录
-5. **配置检查**：确保已正确配置 XRK-AGT 框架的基础环境
-6. **路径别名**：示例代码使用了框架的路径别名，需要确保项目配置正确
+1. **示例用途**：仅供学习与参考，实际使用请按需求修改。
+2. **安全**：示例中的 `eval`/`Function` 仅作演示，生产环境应使用更安全的实现。
+3. **定时任务**：频繁任务应保持轻量，避免影响性能。
+4. **错误处理**：建议补充完善错误处理与日志。
 
 ## 🔍 常见问题
 
