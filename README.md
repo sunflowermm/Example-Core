@@ -556,7 +556,12 @@ A: 按照现有示例的结构创建新文件，确保导出格式正确。
 ## 📚 相关文档
 
 更多详细信息请参考：
-- [框架插件具体开发文档](https://github.com/sunflowermm/XRK-AGT)
+- [XRK-AGT 主仓库](https://github.com/sunflowermm/XRK-AGT)
+
+## 🙏 鸣谢
+
+本示例 Core 构建于 [XRK-AGT](https://github.com/sunflowermm/XRK-AGT) 框架之上，
+感谢 XRK-AGT 提供的分层架构、插件系统、Tasker 与 AIStream 工作流基础设施，让本目录可以作为标准示例向下复用。
 
 ## 🤝 贡献
 
