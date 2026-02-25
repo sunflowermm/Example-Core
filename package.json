@@ -6,6 +6,11 @@
   "main": "index.js",
   "author": "Xrkseek",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sunflowermm/Example-Core.git"
+  },
+  "homepage": "https://github.com/sunflowermm/Example-Core",
   "keywords": [
     "xrk-agt",
     "examples",

@@ -117,30 +117,14 @@ mindmap
 
 ## 🚀 快速开始
 
-### 安装和使用
-
-1. **克隆或下载本仓库**
-   ```bash
-   git clone <repository-url>
-   cd XRK-Core
-   ```
-
-2. **安装依赖**（如果需要）
-   ```bash
-   npm install
-   # 或
-   pnpm install
-   ```
-
-3. **集成到 XRK-AGT 框架**
+### 集成到 XRK-AGT 框架
    - 将 `XRK-Core` 文件夹复制到主项目的 `core/` 目录下
    - 框架会自动扫描并加载示例代码
    - 根据实际需求修改示例代码
 
-4. **单独使用**
-   - 每个示例文件都是独立的
-   - 可以直接复制到你的项目中使用
-   - 根据框架文档调整导入路径
+### 单独使用示例代码
+- 每个示例文件都是独立的，可以直接复制到你的项目中使用
+- 根据你自己的工程结构与工具链（npm/pnpm/bun 等）安装依赖、调整导入路径
 
 ### 1. 插件开发（Plugin）
 
@@ -217,12 +201,11 @@ Tasker 用于连接不同的聊天平台（QQ、微信、Telegram 等）。
 
 Web 界面用于提供用户交互界面。
 
-**Web 界面示例** (`www/example.html`)
-- ✅ 简洁美观的 UI 设计
-- ✅ API 调用示例
-- ✅ 响应式布局
-- ✅ 错误处理
-- ✅ 加载状态显示
+**前端工程示例**（`www/frontend-example/`）
+
+- ✅ 支持 Vite + React 开发态运行（由 `sign.json` 自动发现/拉起）
+- ✅ 主服务统一端口访问（子路径挂载，例如 `/example`）
+- ✅ 可复用到 Vue/Svelte/webpack dev server、Next/Nuxt 等前端工程（详见 `docs/server.md` 的“前端工程接入”章节）
 
 ## 📖 详细说明
 
