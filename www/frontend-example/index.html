@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>XRK-AGT Example-Core 前端示例</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <!--
+      这里使用根路径的入口脚本：
+      - 访问入口: /example 由主服务代理到 Vite 根 /
+      - 脚本地址: /src/main.jsx 由主服务的 /src 代理到 Vite 的 /src
+      这样可以避免 Vite 内部再去解析 /example/src/... 导致 404。
+    -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+

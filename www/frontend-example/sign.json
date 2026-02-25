@@ -1,0 +1,17 @@
+{
+  "id": "example",
+  "name": "Example-Core 前端开发示例",
+  "description": "这是一个示例 sign.json，放在 core/Example-Core/www/frontend-example 下，用于演示自动扫描和反向代理。实际使用时请在该目录内放入真实的 React/Vue 工程，并修改 command/args/port 等字段。",
+  "enabled": true,
+  "command": "pnpm",
+  "args": ["dev"],
+  "port": 4173,
+  "proxy": {
+    "mount": "/example"
+  },
+  "env": {
+    "BROWSER": "none"
+  },
+  "autoRestart": true
+}
+

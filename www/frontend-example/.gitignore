@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+out/
+.next/
+.nuxt/
+.vite/
+.cache/
+
+.env
+.env.*
+

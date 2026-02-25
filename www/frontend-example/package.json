@@ -1,0 +1,33 @@
+{
+  "name": "example-core-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "*",
+    "react-dom": "*",
+    "ogl": "*",
+    "@appletosolutions/reactbits": "^1.0.3",
+    "gsap": "^3.12.7",
+    "framer-motion": "^12.11.3",
+    "matter-js": "^0.20.0",
+    "three": "^0.183.0",
+    "@react-three/fiber": "^9.1.2",
+    "@react-three/drei": "^10.7.7",
+    "@chakra-ui/react": "^3.16.1",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "gl-matrix": "^3.4.3",
+    "@react-three/postprocessing": "^3.0.4"
+  },
+  "devDependencies": {
+    "vite": "*",
+    "@vitejs/plugin-react-swc": "*"
+  }
+}
+
