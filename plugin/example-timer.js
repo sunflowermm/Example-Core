@@ -18,27 +18,27 @@ export default class ExampleTimer extends plugin {
       task: [
         {
           name: '每小时问候',
-          cron: '0 * * * *',  // 每小时的第 0 分钟执行
+          cron: '0 * * * *',
           fnc: 'hourlyGreeting',
-          log: true  // 是否记录日志
+          log: false
         },
         {
           name: '每天定时任务',
-          cron: '0 9 * * *',  // 每天 9:00 执行
+          cron: '0 9 * * *',
           fnc: 'dailyTask',
-          log: true
+          log: false
         },
         {
           name: '每周任务',
-          cron: '0 10 * * 1',  // 每周一 10:00 执行
+          cron: '0 10 * * 1',
           fnc: 'weeklyTask',
-          log: true
+          log: false
         },
         {
           name: '每分钟检查',
-          cron: '* * * * *',  // 每分钟执行（示例，实际使用时谨慎使用）
+          cron: '* * * * *',
           fnc: 'minuteCheck',
-          log: false  // 频繁任务可以不记录日志
+          log: false
         }
       ],
       rule: [
@@ -55,34 +55,12 @@ export default class ExampleTimer extends plugin {
    * 每小时执行的任务
    */
   async hourlyGreeting() {
-    BotUtil.makeLog('info', '定时任务执行：每小时问候', 'ExampleTimer')
-    
-    // 示例：获取当前时间
-    const now = new Date()
-    const hour = now.getHours()
-    
-    // 根据时间段发送不同的问候
-    let greeting = ''
-    if (hour >= 6 && hour < 12) {
-      greeting = '早上好！新的一天开始了。'
-    } else if (hour >= 12 && hour < 18) {
-      greeting = '下午好！工作辛苦了。'
-    } else if (hour >= 18 && hour < 22) {
-      greeting = '晚上好！'
-    } else {
-      greeting = '夜深了，注意休息。'
-    }
-
-    BotUtil.makeLog('info', `定时问候：${greeting}`, 'ExampleTimer')
-    
-    // 实际使用时，可以获取所有群组或用户，发送消息
-    // const bot = Bot[this.e?.self_id] || Bot
-    // if (bot && bot.getGroupList) {
-    //   const groups = await bot.getGroupList()
-    //   for (const group of groups) {
-    //     await bot.sendGroupMsg(group.group_id, greeting)
-    //   }
-    // }
+    const hour = new Date().getHours()
+    let greeting = '夜深了，注意休息。'
+    if (hour >= 6 && hour < 12) greeting = '早上好！新的一天开始了。'
+    else if (hour >= 12 && hour < 18) greeting = '下午好！工作辛苦了。'
+    else if (hour >= 18 && hour < 22) greeting = '晚上好！'
+    BotUtil.makeLog('debug', `定时问候：${greeting}`, 'ExampleTimer')
   }
 
   /**
