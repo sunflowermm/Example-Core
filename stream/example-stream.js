@@ -1,5 +1,5 @@
-import AIStream from '../../../src/infrastructure/aistream/aistream.js';
-import BotUtil from '../../../src/utils/botutil.js';
+import AiWorkflow from '../../../src/infrastructure/ai-workflow/ai-workflow.js';
+import RuntimeUtil from '../../../src/utils/runtime-util.js';
 
 /**
  * AI 工作流示例
@@ -7,10 +7,10 @@ import BotUtil from '../../../src/utils/botutil.js';
  * 这个示例展示了如何创建一个 AI 工作流。
  * AI 工作流用于处理复杂的 AI 对话和任务。
  * 
- * 工作流继承自 AIStream 类，提供 AI 对话、函数调用、Embedding 等功能。
+ * 工作流继承自 AiWorkflow 类，提供 AI 对话、函数调用、Embedding 等功能。
  */
 
-export default class ExampleStream extends AIStream {
+export default class ExampleStream extends AiWorkflow {
   constructor() {
     super({
       name: 'example-stream',  // 工作流名称
@@ -38,7 +38,7 @@ export default class ExampleStream extends AIStream {
   async init() {
     await super.init();
     this.registerAllFunctions();
-    BotUtil.makeLog('info', `工作流 "${this.name}" 已初始化`, 'ExampleStream');
+    RuntimeUtil.makeLog('info', `工作流 "${this.name}" 已初始化`, 'ExampleStream');
     return true;
   }
 
@@ -78,7 +78,7 @@ export default class ExampleStream extends AIStream {
     const question = typeof input === 'string' ? input : input.text || input.message || '';
     
     if (!question.trim()) {
-      BotUtil.makeLog('warn', '工作流收到空输入', 'ExampleStream');
+      RuntimeUtil.makeLog('warn', '工作流收到空输入', 'ExampleStream');
       return null;
     }
 
@@ -93,7 +93,7 @@ export default class ExampleStream extends AIStream {
       const response = await this.callAI(messages, this.config);
       return response;
     } catch (error) {
-      BotUtil.makeLog('error', `工作流处理失败: ${error.message}`, 'ExampleStream');
+      RuntimeUtil.makeLog('error', `工作流处理失败: ${error.message}`, 'ExampleStream');
       throw error;
     }
   }
@@ -213,7 +213,7 @@ export default class ExampleStream extends AIStream {
    * @param {Object} context - 上下文信息
    */
   async handleError(error, context) {
-    BotUtil.makeLog('error', `工作流错误: ${error.message}`, 'ExampleStream', {
+    RuntimeUtil.makeLog('error', `工作流错误: ${error.message}`, 'ExampleStream', {
       stack: error.stack,
       context
     });

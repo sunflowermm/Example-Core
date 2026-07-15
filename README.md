@@ -6,8 +6,8 @@
 
 **Example-Core 使用相对路径**，不使用 Node 的 `#imports` 别名：
 
-- ✅ `import BotUtil from '../../../src/utils/botutil.js'`
-- ❌ `import BotUtil from '#utils/botutil.js'`
+- ✅ `import RuntimeUtil from '../../../src/utils/runtime-util.js'`
+- ❌ `import RuntimeUtil from '#utils/runtime-util.js'`
 
 原因：本 Core 有独立 `package.json`，`imports` 作用域在包内，无法引用上层 `src/`，故使用相对路径。
 
@@ -214,7 +214,7 @@ Web 界面用于提供用户交互界面。
 插件继承自 `plugin` 类，通过 `rule` 配置匹配规则：
 
 ```javascript
-export default class MyPlugin extends plugin {
+export default class MyPlugin extends PluginBase {
   constructor() {
     super({
       name: '插件名称',
@@ -306,12 +306,12 @@ export default {
 
 ### AI 工作流
 
-工作流继承自 `AIStream`，使用 **registerMCPTool** 注册工具（供 LLM 调用）：
+工作流继承自 `AiWorkflow`，使用 **registerMCPTool** 注册工具（供 LLM 调用）：
 
 ```javascript
-import AIStream from '../../../src/infrastructure/aistream/aistream.js';
+import AiWorkflow from '../../../src/infrastructure/ai-workflow/ai-workflow.js';
 
-export default class MyStream extends AIStream {
+export default class MyStream extends AiWorkflow {
   constructor() {
     super({
       name: 'my-stream',
@@ -344,7 +344,7 @@ export default class MyStream extends AIStream {
 Tasker 用于连接不同的聊天平台：
 
 ```javascript
-Bot.tasker.push(
+AgentRuntime.tasker.push(
   new (class MyTasker {
     id = "PLATFORM_ID"
     name = "PlatformName"
@@ -379,7 +379,7 @@ export default class MyListener extends EventListenerBase {
   }
 
   async init() {
-    const bot = this.bot || Bot
+    const bot = this.bot || AgentRuntime
     bot.on('custom.event', (e) => this.handleEvent(e))
   }
 
@@ -423,7 +423,7 @@ Web 界面是独立的 HTML 文件，可以通过 HTTP API 与框架交互：
 - `events/*.js` → 事件监听器
 - `http/*.js` → HTTP API
 - `stream/*.js` → 工作流
-- `tasker/*.js` → Tasker 适配器（需在文件中 `Bot.tasker.push(实例)`）
+- `tasker/*.js` → Tasker 适配器（需在文件中 `AgentRuntime.tasker.push(实例)`）
 - `www/**` → 静态页面
 
 无需在 `index.js` 中列出上述模块。
@@ -456,7 +456,7 @@ Web 界面是独立的 HTML 文件，可以通过 HTTP API 与框架交互：
 
 ```javascript
 // plugin/my-plugin.js
-export default class MyPlugin extends plugin {
+export default class MyPlugin extends PluginBase {
   constructor() {
     super({
       name: '我的插件',
@@ -504,10 +504,10 @@ export default {
 ### 示例 3：使用工作流
 
 ```javascript
-import StreamLoader from '../../../src/infrastructure/aistream/loader.js';
+import AiStreamLoader from '../../../src/infrastructure/ai-workflow/loader.js';
 
 // 在插件中调用工作流
-const stream = StreamLoader.getStream('example-stream');
+const stream = AiStreamLoader.getStream('example-stream');
 await stream.process(this.e, question, { enableMemory: true });
 ```
 
@@ -544,7 +544,7 @@ A: 按照现有示例的结构创建新文件，确保导出格式正确。
 ## 🙏 鸣谢
 
 本示例 Core 构建于 [XRK-AGT](https://github.com/sunflowermm/XRK-AGT) 框架之上，
-感谢 XRK-AGT 提供的分层架构、插件系统、Tasker 与 AIStream 工作流基础设施，让本目录可以作为标准示例向下复用。
+感谢 XRK-AGT 提供的分层架构、插件系统、Tasker 与 AiWorkflow 工作流基础设施，让本目录可以作为标准示例向下复用。
 
 ## 🤝 贡献
 

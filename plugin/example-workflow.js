@@ -1,5 +1,5 @@
-import StreamLoader from '../../../src/infrastructure/aistream/loader.js'
-import BotUtil from '../../../src/utils/botutil.js'
+import AiStreamLoader from '../../../src/infrastructure/ai-workflow/loader.js'
+import RuntimeUtil from '../../../src/utils/runtime-util.js'
 
 /**
  * 工作流插件示例
@@ -8,7 +8,7 @@ import BotUtil from '../../../src/utils/botutil.js'
  * 包含了多种工作流使用场景和配置选项。
  */
 
-export default class ExampleWorkflow extends plugin {
+export default class ExampleWorkflow extends PluginBase {
   constructor() {
     super({
       name: '工作流示例插件',
@@ -50,7 +50,7 @@ export default class ExampleWorkflow extends plugin {
     }
 
     // 获取工作流实例（使用本 Core 的 example-stream）
-    const stream = StreamLoader.getStream('example-stream');
+    const stream = AiStreamLoader.getStream('example-stream');
     if (!stream) {
       await this.reply('工作流未加载，请检查配置')
       return true
@@ -65,7 +65,7 @@ export default class ExampleWorkflow extends plugin {
         enableDatabase: false   // 是否启用数据库查询
       })
     } catch (error) {
-      BotUtil.makeLog('error', `工作流处理失败: ${error.message}`, 'ExampleWorkflow')
+      RuntimeUtil.makeLog('error', `工作流处理失败: ${error.message}`, 'ExampleWorkflow')
       await this.reply(`处理失败：${error.message}`)
     }
 
@@ -108,7 +108,7 @@ export default class ExampleWorkflow extends plugin {
       return true
     }
 
-    const stream = StreamLoader.getStream('example-stream')
+    const stream = AiStreamLoader.getStream('example-stream')
     if (!stream) {
       await this.reply('工作流未加载，请检查配置')
       return true
@@ -117,7 +117,7 @@ export default class ExampleWorkflow extends plugin {
     try {
       await stream.process(this.e, question, options)
     } catch (error) {
-      BotUtil.makeLog('error', `工作流处理失败: ${error.message}`, 'ExampleWorkflow')
+      RuntimeUtil.makeLog('error', `工作流处理失败: ${error.message}`, 'ExampleWorkflow')
       await this.reply(`处理失败：${error.message}`)
     }
 

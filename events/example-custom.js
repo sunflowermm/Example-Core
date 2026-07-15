@@ -1,6 +1,6 @@
 import EventListenerBase from '../../../src/infrastructure/listener/base.js'
 import { EventNormalizer } from '../../../src/utils/event-normalizer.js'
-import BotUtil from '../../../src/utils/botutil.js'
+import RuntimeUtil from '../../../src/utils/runtime-util.js'
 
 /**
  * 自定义事件监听器示例
@@ -18,13 +18,13 @@ export default class ExampleCustomEvent extends EventListenerBase {
    * 初始化监听器
    */
   async init() {
-    const bot = this.bot || Bot;
+    const bot = this.bot || AgentRuntime;
     this._boundHandler = (e) => this.handleEvent(e);
     bot.on('custom.message', this._boundHandler);
     bot.on('custom.notice', this._boundHandler);
     bot.on('custom.request', this._boundHandler);
 
-    BotUtil.makeLog('info', '自定义事件监听器已初始化', 'ExampleCustomEvent');
+    RuntimeUtil.makeLog('info', '自定义事件监听器已初始化', 'ExampleCustomEvent');
   }
 
   /**
@@ -99,13 +99,13 @@ export default class ExampleCustomEvent extends EventListenerBase {
    * 清理资源（监听器卸载时调用）
    */
   async destroy() {
-    const bot = this.bot || Bot;
+    const bot = this.bot || AgentRuntime;
     if (this._boundHandler) {
       bot.off('custom.message', this._boundHandler);
       bot.off('custom.notice', this._boundHandler);
       bot.off('custom.request', this._boundHandler);
       this._boundHandler = null;
     }
-    BotUtil.makeLog('info', '自定义事件监听器已卸载', 'ExampleCustomEvent');
+    RuntimeUtil.makeLog('info', '自定义事件监听器已卸载', 'ExampleCustomEvent');
   }
 }

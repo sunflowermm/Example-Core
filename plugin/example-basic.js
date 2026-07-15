@@ -5,7 +5,7 @@
  * 包含了多种常见的插件开发模式和功能。
  */
 
-export default class ExampleBasic extends plugin {
+export default class ExampleBasic extends PluginBase {
   constructor() {
     super({
       name: '基础示例插件',
@@ -183,7 +183,7 @@ export default class ExampleBasic extends plugin {
       return false
     }
 
-    // 注意：实际获取上一条消息需要根据具体的 Bot 实现
+    // 注意：实际获取上一条消息需要根据具体的 AgentRuntime 实现
     // 这里只是示例结构
     await this.reply('复读功能示例：实际使用时需要实现消息历史记录功能')
 
