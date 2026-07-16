@@ -1,4 +1,4 @@
-import EventListenerBase from '../../../src/infrastructure/listener/base.js'
+import ListenerBase from '../../../src/infrastructure/listener/base.js'
 import { EventNormalizer } from '../../../src/utils/event-normalizer.js'
 import RuntimeUtil from '../../../src/utils/runtime-util.js'
 
@@ -9,7 +9,7 @@ import RuntimeUtil from '../../../src/utils/runtime-util.js'
  * 事件监听器用于接收和处理来自不同平台的事件。
  */
 
-export default class ExampleCustomEvent extends EventListenerBase {
+export default class ExampleCustomEvent extends ListenerBase {
   constructor() {
     super('example-custom')  // 监听器名称
   }

@@ -371,9 +371,9 @@ AgentRuntime.tasker.push(
 事件监听器用于接收和处理平台事件：
 
 ```javascript
-import EventListenerBase from '../../../src/infrastructure/listener/base.js';
+import ListenerBase from '../../../src/infrastructure/listener/base.js';
 
-export default class MyListener extends EventListenerBase {
+export default class MyListener extends ListenerBase {
   constructor() {
     super('listener-name')
   }
@@ -504,10 +504,10 @@ export default {
 ### 示例 3：使用工作流
 
 ```javascript
-import AiStreamLoader from '../../../src/infrastructure/ai-workflow/loader.js';
+import AiWorkflowLoader from '../../../src/infrastructure/ai-workflow/loader.js';
 
 // 在插件中调用工作流
-const stream = AiStreamLoader.getStream('example-stream');
+const stream = AiWorkflowLoader.getWorkflow('example-stream');
 await stream.process(this.e, question, { enableMemory: true });
 ```
 

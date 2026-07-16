@@ -1,4 +1,4 @@
-import AiStreamLoader from '../../../src/infrastructure/ai-workflow/loader.js'
+import AiWorkflowLoader from '../../../src/infrastructure/ai-workflow/loader.js'
 import RuntimeUtil from '../../../src/utils/runtime-util.js'
 
 /**
@@ -50,7 +50,7 @@ export default class ExampleWorkflow extends PluginBase {
     }
 
     // 获取工作流实例（使用本 Core 的 example-stream）
-    const stream = AiStreamLoader.getStream('example-stream');
+    const stream = AiWorkflowLoader.getWorkflow('example-stream');
     if (!stream) {
       await this.reply('工作流未加载，请检查配置')
       return true
@@ -108,7 +108,7 @@ export default class ExampleWorkflow extends PluginBase {
       return true
     }
 
-    const stream = AiStreamLoader.getStream('example-stream')
+    const stream = AiWorkflowLoader.getWorkflow('example-stream')
     if (!stream) {
       await this.reply('工作流未加载，请检查配置')
       return true
