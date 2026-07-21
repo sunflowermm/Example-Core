@@ -32,10 +32,16 @@ Example-Core/
 ├── tasker/
 │   └── example-tasker.js
 └── www/
-    └── example/
-        └── example.html
+    └── frontend-example/        # 目录名；对外见 sign.proxy.mount → /example
+        ├── sign.json            # serve=static；proxy.mount=/example
+        ├── README.md
+        ├── package.json
+        ├── vite.config.mts
+        ├── src/
+        └── dist/                # pnpm build 产物
 ```
 
+> 前端工程（有 sign）见 [docs/www-mount.md](../../docs/www-mount.md)。访问 **`/example/`**，不是 `/frontend-example/`。
 ## 🏗️ 架构图
 
 ### 框架模块关系

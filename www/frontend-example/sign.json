@@ -1,21 +1,17 @@
 {
   "id": "example",
-  "name": "Example-Core 前端开发示例",
-  "description": "这是一个示例 sign.json，放在 core/Example-Core/www/frontend-example 下，用于演示自动扫描和反向代理。实际使用时请在该目录内放入真实的 React/Vue 工程，并修改 command/args/port 等字段。",
-  "enabled": true,
-  "mode": "auto",
+  "name": "Example-Core 前端（Vite SPA）",
+  "description": "动态前端规范示例：默认静态托管 dist/；HMR 时改 serve=proxy 且 enabled=true。",
+  "enabled": false,
+  "serve": "static",
+  "staticRoot": "dist",
+  "mode": "dev",
   "command": "pnpm",
   "args": ["dev"],
-  "modes": ["dev", "prod"],
-  "build": { "command": "pnpm", "args": ["build"] },
-  "prod": { "command": "pnpm", "args": ["preview"] },
+  "devOnly": true,
+  "modes": ["dev"],
   "port": 4173,
-  "proxy": {
-    "mount": "/example"
-  },
-  "env": {
-    "BROWSER": "none"
-  },
+  "proxy": { "mount": "/example" },
+  "env": { "BROWSER": "none" },
   "autoRestart": true
 }
-

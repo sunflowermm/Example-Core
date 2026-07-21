@@ -8,12 +8,10 @@
   <body>
     <div id="root"></div>
     <!--
-      这里使用根路径的入口脚本：
-      - 访问入口: /example 由主服务代理到 Vite 根 /
-      - 脚本地址: /src/main.jsx 由主服务的 /src 代理到 Vite 的 /src
-      这样可以避免 Vite 内部再去解析 /example/src/... 导致 404。
+      Vite 入口。生产 build 后由主服静态挂 dist/（sign.serve=static）。
+      开发 HMR：sign.serve=proxy 时由 FrontendLauncher 反代 /example。
+      base 见 vite.config.mts（默认 /example/，与 proxy.mount 一致）。
     -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-
