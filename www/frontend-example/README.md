@@ -1,14 +1,13 @@
-# frontend-example（前端工程 · 特殊挂载）
+# frontend-example（前端工程）
 
-本目录是 **有 `sign.json` 的前端工程**，与无 sign 的普通静态（如 `/xrk`）规则不同。权威说明：[docs/www-mount.md](../../../../docs/www-mount.md)。
+有 `sign.json`。权威：[docs/www-mount.md](../../../../docs/www-mount.md)。
 
-- 磁盘目录名：`frontend-example`
-- 对外 URL：`sign.proxy.mount` → **`/example`**
-- 日常：`serve=static`，主服挂 `dist/`；改代码后本目录 `pnpm build`
+| `enabled` | 行为 |
+|-----------|------|
+| `false`（当前） | 只 build，不启进程，挂 `dist` → **`/example/`** |
+| `true` | 启 `pnpm dev` + 反代 |
 
 ```bash
-pnpm install && pnpm build
-# 打开 http://<主服>/example/
+# 本地也可手动：pnpm build
+# 主服启动时若缺 dist 会自动 pnpm build
 ```
-
-HMR：`serve`→`proxy`，`enabled`→`true`，重启主服。
