@@ -40,10 +40,9 @@ export default class ExampleCustomEvent extends ListenerBase {
     // 标记事件已处理（避免重复处理）
     if (!this.markProcessed(e)) return
 
-    // 标记适配器信息
-    this.markAdapter(e, { 
+    // 标记 tasker
+    this.markTasker(e, { 
       isCustom: true,
-      adapter: 'example-custom'
     })
 
     // 标准化事件格式
